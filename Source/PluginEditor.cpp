@@ -30,7 +30,7 @@ void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (50.0f);
-    g.drawFittedText ("I edited the text", getLocalBounds(), juce::Justification::centred, 1);
+    g.drawFittedText ("git commit scrub", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void SimpleEQAudioProcessorEditor::resized()
