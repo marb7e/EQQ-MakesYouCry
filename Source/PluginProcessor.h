@@ -10,13 +10,24 @@
 
 #include <JuceHeader.h>
 
+// BPR -> enum for the slope
+
+enum Slope
+{
+    Slope_12,
+    Slope_24,
+    Slope_36,
+    Slope_48
+};
+
+
 // BPR -> Chain setting saver
 
 struct ChainSettings
 {
     float peakFreq { 0 }, peakGainInDecibels { 0 }, peakQuality { 1.f };
     float lowCutFreq { 0 }, highCutFreq { 0 };
-    int lowCutSlope { 0 }, highCutSlope { 0 };
+    int lowCutSlope { Slope::Slope_12 }, highCutSlope {Slope::Slope_12 };
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
@@ -85,12 +96,15 @@ private:
 
     MonoChain leftChain, rightChain;
 
+
+
     enum ChainPositions
     {
         LowCut,
         Peak,
         HighCut
     };
+
 
 
 
