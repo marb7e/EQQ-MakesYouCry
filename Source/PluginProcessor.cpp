@@ -110,6 +110,7 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
     auto chainSettings = getChainSettings(apvts);
 
+    
 
     updatePeakFilter(chainSettings);
 
