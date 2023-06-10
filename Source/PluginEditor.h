@@ -11,6 +11,37 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+struct CustomRotarySlider : juce::Slider
+{
+    CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
+                           juce::Slider::TextEntryBoxPosition::TextBoxAbove)
+    {
+
+    }
+};
+
+struct CustomLinearVerticalSlider : juce::Slider
+{
+    CustomLinearVerticalSlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical,
+                                   juce::Slider::TextEntryBoxPosition::TextBoxAbove)
+                                   
+    {
+
+    }
+
+};
+
+struct CustomLinearHorizontalSlider : juce::Slider
+{
+    CustomLinearHorizontalSlider() : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
+                                     juce::Slider::TextBoxAbove)
+
+    {
+
+    }
+
+};
+
 //==============================================================================
 /**
 */
@@ -28,6 +59,24 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     SimpleEQAudioProcessor& audioProcessor;
+
+    CustomRotarySlider lowCutFreqSlider,
+                       highCutFreqSlider,
+                       lowCutSlopeSlider,
+                       highCutSlopeSlider;
+
+    CustomLinearVerticalSlider peakGainSlider,
+                               masterVolumeSlider;
+                               
+
+    CustomLinearHorizontalSlider peakFreqSlider,
+                                 peakQualitySlider;
+                               
+                       
+
+    std::vector<juce::Component*> getComps();
+
+        
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessorEditor)
 };

@@ -41,16 +41,16 @@
  #define JucePlugin_Enable_ARA             0
 #endif
 #ifndef  JucePlugin_Name
- #define JucePlugin_Name                   "SimpleEQ"
+ #define JucePlugin_Name                   "EQQ"
 #endif
 #ifndef  JucePlugin_Desc
- #define JucePlugin_Desc                   "SimpleEQ"
+ #define JucePlugin_Desc                   "EQQ - The EQ that makes you cry!"
 #endif
 #ifndef  JucePlugin_Manufacturer
- #define JucePlugin_Manufacturer           "yourcompany"
+ #define JucePlugin_Manufacturer           "Marb7e Studios"
 #endif
 #ifndef  JucePlugin_ManufacturerWebsite
- #define JucePlugin_ManufacturerWebsite    "www.yourcompany.com"
+ #define JucePlugin_ManufacturerWebsite    "https://marb7e.wixsite.com/marb7e"
 #endif
 #ifndef  JucePlugin_ManufacturerEmail
  #define JucePlugin_ManufacturerEmail      ""
@@ -101,19 +101,19 @@
  #define JucePlugin_AUSubType              JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_AUExportPrefix
- #define JucePlugin_AUExportPrefix         SimpleEQAU
+ #define JucePlugin_AUExportPrefix         EQQAU
 #endif
 #ifndef  JucePlugin_AUExportPrefixQuoted
- #define JucePlugin_AUExportPrefixQuoted   "SimpleEQAU"
+ #define JucePlugin_AUExportPrefixQuoted   "EQQAU"
 #endif
 #ifndef  JucePlugin_AUManufacturerCode
  #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
 #endif
 #ifndef  JucePlugin_CFBundleIdentifier
- #define JucePlugin_CFBundleIdentifier     com.yourcompany.SimpleEQ
+ #define JucePlugin_CFBundleIdentifier     com.Marb7eStudios.EQQ
 #endif
 #ifndef  JucePlugin_AAXIdentifier
- #define JucePlugin_AAXIdentifier          com.yourcompany.SimpleEQ
+ #define JucePlugin_AAXIdentifier          com.Marb7eStudios.EQQ
 #endif
 #ifndef  JucePlugin_AAXManufacturerCode
  #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode
@@ -137,7 +137,7 @@
  #define JucePlugin_IAASubType             JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_IAAName
- #define JucePlugin_IAAName                "yourcompany: SimpleEQ"
+ #define JucePlugin_IAAName                "Marb7e Studios: EQQ"
 #endif
 #ifndef  JucePlugin_VSTNumMidiInputs
  #define JucePlugin_VSTNumMidiInputs       16
@@ -152,10 +152,10 @@
  #define JucePlugin_ARATransformationFlags  0
 #endif
 #ifndef  JucePlugin_ARAFactoryID
- #define JucePlugin_ARAFactoryID           "com.yourcompany.SimpleEQ.factory"
+ #define JucePlugin_ARAFactoryID           "com.Marb7eStudios.EQQ.factory"
 #endif
 #ifndef  JucePlugin_ARADocumentArchiveID
- #define JucePlugin_ARADocumentArchiveID   "com.yourcompany.SimpleEQ.aradocumentarchive.1.0.0"
+ #define JucePlugin_ARADocumentArchiveID   "com.Marb7eStudios.EQQ.aradocumentarchive.1.0.0"
 #endif
 #ifndef  JucePlugin_ARACompatibleArchiveIDs
  #define JucePlugin_ARACompatibleArchiveIDs  ""

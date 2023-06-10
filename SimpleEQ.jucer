@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="qZLcGe" name="SimpleEQ" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="qZLcGe" name="EQQ" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              cppLanguageStandard="17">
-  <MAINGROUP id="I98a2z" name="SimpleEQ">
+              cppLanguageStandard="17" companyName="Marb7e Studios" companyWebsite="https://marb7e.wixsite.com/marb7e"
+              pluginDesc="EQQ - The EQ that makes you cry!" pluginName="EQQ">
+  <MAINGROUP id="I98a2z" name="EQQ">
     <GROUP id="{9ECF2F77-796F-6D91-28D0-1D32BA586CD3}" name="Source">
       <FILE id="rlr1x1" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

@@ -15,9 +15,10 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileDescription",  "SimpleEQ\0"
+      VALUE "CompanyName",  "Marb7e Studios\0"
+      VALUE "FileDescription",  "EQQ\0"
       VALUE "FileVersion",  "1.0.0\0"
-      VALUE "ProductName",  "SimpleEQ\0"
+      VALUE "ProductName",  "EQQ\0"
       VALUE "ProductVersion",  "1.0.0\0"
     END
   END
