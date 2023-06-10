@@ -11,6 +11,8 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+
+
 struct CustomRotarySlider : juce::Slider
 {
     CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
@@ -58,6 +60,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
+    
     SimpleEQAudioProcessor& audioProcessor;
 
     CustomRotarySlider lowCutFreqSlider,
@@ -72,8 +75,20 @@ private:
     CustomLinearHorizontalSlider peakFreqSlider,
                                  peakQualitySlider;
                                
-                       
+    
+    using APVTS = juce::AudioProcessorValueTreeState;
+    using Attachement = juce::AudioProcessorValueTreeState::SliderAttachment;
 
+    Attachement
+        peakFreqSliderAttachement,
+        peakGainSliderAttachement,
+        masterVolumeSliderAttachement,
+        peakQualitySliderAttachement,
+        lowCutFreqSliderAttachement,
+        highCutFreqSliderAttachement,
+        lowCutSlopeSliderAttachement,
+        highCutSlopeSliderAttachement;
+    
     std::vector<juce::Component*> getComps();
 
         

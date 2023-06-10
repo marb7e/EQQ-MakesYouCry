@@ -181,9 +181,6 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     leftChain.process(leftContext);
     rightChain.process(rightContext);
 
-    
-
-
 }
 
 //==============================================================================
@@ -242,6 +239,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
     settings.peakQuality = apvts.getRawParameterValue("Peak Quality")->load();
     settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCut Slope")->load());
     settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCut Slope")->load());
+    settings.masterVolume = apvts.getRawParameterValue("Master Volume")->load();
 
     return settings;
 }
@@ -345,6 +343,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout
                                                             "Peak Quality",
                                                             juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f),
                                                             1.f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Master Volume",
+                                                           "Master Volume",
+                                                           juce::NormalisableRange<float>(0.0f, 100.0f, 0.5f, 1.f),
+                                                           100));
 
     // Making the choice array
 

@@ -10,8 +10,16 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p), 
+    peakGainSliderAttachement(audioProcessor.apvts, "Peak Gain", peakGainSlider),
+    peakFreqSliderAttachement(audioProcessor.apvts, "PeakCut Freq", peakFreqSlider),
+    peakQualitySliderAttachement(audioProcessor.apvts,"Peak Quality", peakQualitySlider),
+    lowCutFreqSliderAttachement(audioProcessor.apvts, "LowCut Freq", lowCutFreqSlider),
+    highCutFreqSliderAttachement(audioProcessor.apvts, "HighCut Freq", highCutFreqSlider),
+    lowCutSlopeSliderAttachement(audioProcessor.apvts, "LowCut Slope", lowCutSlopeSlider),
+    highCutSlopeSliderAttachement(audioProcessor.apvts, "HighCut Slope", highCutSlopeSlider),
+    masterVolumeSliderAttachement(audioProcessor.apvts, "Master Volume", masterVolumeSlider)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -77,7 +85,7 @@ void SimpleEQAudioProcessorEditor::resized()
     int sliderXpos = getWidth() * 0.1;
     int sliderFreqYpos = getHeight() * 0.66;
 
-    peakFreqSlider.setBounds(sliderXpos,sliderFreqYpos,sliderWidth,sliderHeight);
+   peakFreqSlider.setBounds(sliderXpos,sliderFreqYpos,sliderWidth,sliderHeight);
 
 
     //Peak Quality Slider
@@ -116,8 +124,8 @@ std::vector<juce::Component*> SimpleEQAudioProcessorEditor::getComps()
     {
         &peakFreqSlider,
         &peakGainSlider,
-        &masterVolumeSlider,
         &peakQualitySlider,
+        &masterVolumeSlider,
         &lowCutFreqSlider,
         &highCutFreqSlider,
         &lowCutSlopeSlider,
