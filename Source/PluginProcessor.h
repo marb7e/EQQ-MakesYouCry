@@ -31,7 +31,20 @@ struct ChainSettings
     float masterVolume{ 100 };
 };
 
+using Filter = juce::dsp::IIR::Filter<float>;
+
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
+
+enum ChainPositions
+{
+    LowCut,
+    Peak,
+    HighCut
+};
 
 //==============================================================================
 /**
@@ -89,22 +102,13 @@ private:
 
     // BPR - DSP implementation
 
-    using Filter = juce::dsp::IIR::Filter<float>;
-
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+    
 
     MonoChain leftChain, rightChain;
 
     juce::AudioParameterFloat* masterVolumeParam;
 
-    enum ChainPositions
-    {
-        LowCut,
-        Peak,
-        HighCut
-    };
+   
 
     void updatePeakFilter(const ChainSettings& chainSettings);
 
