@@ -127,13 +127,25 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
 
         //Response curve color
         g.setColour(Colours::lightskyblue);
-        g.strokePath(responseCurve, PathStrokeType(1.f));
+        g.strokePath(responseCurve, PathStrokeType(0.5f));
     }
 }
 
 //==============================================================================
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
+
+    peakFreqSlider(*audioProcessor.apvts.getParameter("PeakCut Freq"), "Hz"),
+    peakGainSlider(*audioProcessor.apvts.getParameter("Peak Gain"), "dB"),
+    peakQualitySlider(*audioProcessor.apvts.getParameter("Peak Quality"), ""),
+    lowCutFreqSlider(*audioProcessor.apvts.getParameter("LowCut Freq"), "Hz"),
+    highCutFreqSlider(*audioProcessor.apvts.getParameter("HighCut Freq"), "Hz"),
+    lowCutSlopeSlider(*audioProcessor.apvts.getParameter("LowCut Slope"), "db/Oct"),
+    highCutSlopeSlider(*audioProcessor.apvts.getParameter("HighCut Slope"), "db/Oct"),
+    masterVolumeSlider(*audioProcessor.apvts.getParameter("Master Volume"), "dB"),
+    
+
+
     responseCurveComponent(audioProcessor),
     peakGainSliderAttachement(audioProcessor.apvts, "Peak Gain", peakGainSlider),
     peakFreqSliderAttachement(audioProcessor.apvts, "PeakCut Freq", peakFreqSlider),
