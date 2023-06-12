@@ -52,62 +52,15 @@ private:
 
 struct CustomLinearVerticalSlider : juce::Slider
 {
-    CustomLinearVerticalSlider(juce::RangedAudioParameter& rap, const juce::String& unitSuffix) :
-        juce::Slider(juce::Slider::SliderStyle::LinearVertical,
-                                   juce::Slider::TextEntryBoxPosition::NoTextBox),
-        param(&rap),
-        suffix(unitSuffix)
-    {
-        setLookAndFeel(&lnf);
-    }
-
-    ~CustomLinearVerticalSlider()
-    {
-    setLookAndFeel(nullptr);
-    }
-    
-    void paint(juce::Graphics& g) override;
-    juce::Rectangle<int> getSliderBounds() const;
-    int getTextHeight() const { return 14; }
-    juce::String getDisplayString() const;
-
-
-
-private:
-
-    LookAndFeel lnf;
-
-    juce::RangedAudioParameter* param;
-    juce::String suffix;
+    CustomLinearVerticalSlider() : juce::Slider(juce::Slider::SliderStyle::LinearVertical,
+        juce::Slider::TextEntryBoxPosition::TextBoxAbove) {}
+   
 };
 
 struct CustomLinearHorizontalSlider : juce::Slider
 {
-    CustomLinearHorizontalSlider(juce::RangedAudioParameter& rap, const juce::String& unitSuffix) : 
-        juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
-                                     juce::Slider::NoTextBox),
-        param(&rap),
-        suffix(unitSuffix)
-    {
-        setLookAndFeel(&lnf);
-    }
-
-    ~CustomLinearHorizontalSlider()
-    {
-        setLookAndFeel(nullptr);
-    }
-
-    void paint(juce::Graphics& g) override;
-    juce::Rectangle<int> getSliderBounds() const;
-    int getTextHeight() const { return 14; }
-    juce::String getDisplayString() const;
-private:
-
-    LookAndFeel lnf;
-
-    juce::RangedAudioParameter* param;
-    juce::String suffix;
-
+    CustomLinearHorizontalSlider() : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
+        juce::Slider::TextBoxAbove) {}
 };
 
 struct ResponseCurveComponent : juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer

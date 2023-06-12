@@ -82,64 +82,6 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
     return getLocalBounds();
 }
 
-void CustomLinearHorizontalSlider::paint(juce::Graphics& g)
-{
-    using namespace juce;
-
-    auto minPos = 0;
-    auto maxPos = 10;
-
-    auto sliderBounds = getSliderBounds();
-
-    getLookAndFeel().drawLinearSlider(g,
-        sliderBounds.getX() + 10,
-        sliderBounds.getY(),
-        sliderBounds.getWidth() - 20,
-        sliderBounds.getHeight(),
-        1.0f,
-        minPos,
-        maxPos,
-        Slider::LinearHorizontal,
-        *this);
-
-
-
-}
-
-juce::Rectangle<int> CustomLinearHorizontalSlider::getSliderBounds() const
-{
-    return getLocalBounds();
-}
-
-void CustomLinearVerticalSlider::paint(juce::Graphics& g)
-{
-    using namespace juce;
-
-    auto minPos = 0;
-    auto maxPos = 10;
-
-    auto sliderBounds = getSliderBounds();
-
-    getLookAndFeel().drawLinearSlider(g,
-        sliderBounds.getX(),
-        sliderBounds.getY() + 10,
-        sliderBounds.getWidth(),
-        sliderBounds.getHeight() - 20,
-        1.0f,
-        minPos,
-        maxPos,
-        Slider::LinearBarVertical,
-        *this);
-        
-
-}
-
-juce::Rectangle<int> CustomLinearVerticalSlider::getSliderBounds() const
-{
-    return getLocalBounds();
-}
-
-
 ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor& p) : audioProcessor(p)
 {
     const auto& params = audioProcessor.getParameters();
@@ -266,17 +208,11 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor(SimpleEQAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
 
-    peakFreqSlider(*audioProcessor.apvts.getParameter("PeakCut Freq"), "Hz"),
-    peakGainSlider(*audioProcessor.apvts.getParameter("Peak Gain"), "dB"),
-    peakQualitySlider(*audioProcessor.apvts.getParameter("Peak Quality"), ""),
     lowCutFreqSlider(*audioProcessor.apvts.getParameter("LowCut Freq"), "Hz"),
     highCutFreqSlider(*audioProcessor.apvts.getParameter("HighCut Freq"), "Hz"),
     lowCutSlopeSlider(*audioProcessor.apvts.getParameter("LowCut Slope"), "db/Oct"),
     highCutSlopeSlider(*audioProcessor.apvts.getParameter("HighCut Slope"), "db/Oct"),
-    masterVolumeSlider(*audioProcessor.apvts.getParameter("Master Volume"), "dB"),
     
-
-
     responseCurveComponent(audioProcessor),
     peakGainSliderAttachement(audioProcessor.apvts, "Peak Gain", peakGainSlider),
     peakFreqSliderAttachement(audioProcessor.apvts, "PeakCut Freq", peakFreqSlider),
