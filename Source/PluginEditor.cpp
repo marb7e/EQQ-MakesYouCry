@@ -152,6 +152,8 @@ ResponseCurveComponent::ResponseCurveComponent(SimpleEQAudioProcessor& p) : audi
         param->addListener(this);
     }
 
+    updateChain();
+
     startTimerHz(60);
 }
 
@@ -178,29 +180,41 @@ void ResponseCurveComponent::timerCallback()
 {
     if (parametersChanged.compareAndSetBool(false, true))
     {
-        //update the mono chain
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
-        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-
-        auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-        auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-
-        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
-        //signal a repaint
+        updateChain();
         repaint();
     }
+}
+
+void ResponseCurveComponent::updateChain()
+{
+    //update the mono chain
+    auto chainSettings = getChainSettings(audioProcessor.apvts);
+    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+
+    auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
+
+    updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+    updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+    //signal a repaint
+
 }
 
 void ResponseCurveComponent::paint(juce::Graphics& g)
 {
     using namespace juce;
 
+    
+
     // Response Curve
     auto responseArea = getLocalBounds();
 
     auto w = responseArea.getWidth();
+
+    //Rectangle around response curve
+    g.setColour(Colours::grey);
+    g.drawRect(responseArea.toFloat(), 3);
 
     auto& lowCut = monoChain.get<ChainPositions::LowCut>();
     auto& peak = monoChain.get<ChainPositions::Peak>();
@@ -256,9 +270,7 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
             responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
         }
 
-        //Rectangle around response curve
-        g.setColour(Colours::transparentBlack);
-        g.drawRoundedRectangle(responseArea.toFloat(), 4.f, 1.f);
+        
 
         //Response curve color
         g.setColour(Colours::lightskyblue);
@@ -322,9 +334,12 @@ void SimpleEQAudioProcessorEditor::resized()
     //bounding box for the components
     auto bounds = getLocalBounds();
 
+    
     //dedicated area for future visualizer - cuts a third off the top
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.33);
     responseCurveComponent.setBounds(responseArea);
+
+    bounds.removeFromTop(5);
 
 
     auto windowSpacing = bounds.removeFromBottom(bounds.getHeight() * 0.1);
@@ -383,7 +398,6 @@ void SimpleEQAudioProcessorEditor::resized()
 
 
 }
-
 
 
 
