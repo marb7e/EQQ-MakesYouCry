@@ -370,6 +370,49 @@ void ResponseCurveComponent::resized()
         g.drawFittedText(str, r, juce::Justification::centred, 1);
     }
 
+    for (auto gDb : gain)
+    {
+        auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+
+        String str;
+        if (gDb > 0)
+            str << "+";
+        str << gDb;
+
+        auto textWidth = g.getCurrentFont().getStringWidth(str);
+
+        Rectangle<int> r;
+        r.setSize(textWidth, fontHeight);
+        r.setX(1);
+        r.setCentre(r.getCentreX(), y);
+
+        if (gDb > 0)
+        {
+            g.setColour(Colours::green);
+        }
+        else if (gDb < 0)
+        {
+            g.setColour(Colours::red);
+        }
+        else
+        {
+            g.setColour(Colours::slategrey);
+        }
+
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+
+        str.clear();
+
+        str << (gDb - 24.f);
+        textWidth = g.getCurrentFont().getStringWidth(str);
+
+        r.setX(getWidth()-textWidth);
+        r.setSize(textWidth, fontHeight);
+
+        g.setColour(Colours::slategrey);
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+    } 
+
 
    
 }
@@ -500,9 +543,9 @@ juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
     auto bounds = getLocalBounds();
 
     bounds.removeFromTop(12);
-    bounds.removeFromTop(2);
-    bounds.removeFromLeft(20);
-    bounds.removeFromRight(20);
+    bounds.removeFromBottom(4);
+    bounds.removeFromLeft(25);
+    bounds.removeFromRight(25);
 
     return bounds;
 }
@@ -510,8 +553,8 @@ juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
 juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
 {
     auto bounds = getRenderArea();
-    bounds.removeFromTop(4);
-    bounds.removeFromBottom(4);
+    bounds.removeFromTop(8);
+    bounds.removeFromBottom(8);
 
     return bounds;
 
