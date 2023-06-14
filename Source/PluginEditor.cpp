@@ -209,13 +209,13 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
     g.drawImage(background, getLocalBounds().toFloat());
 
     // Response Curve
-    auto responseArea = getLocalBounds();
+    auto responseArea = getAnalysisArea();
 
     auto w = responseArea.getWidth();
 
     //Rectangle around response curve
     g.setColour(Colours::grey);
-    g.drawRect(responseArea.toFloat(), 3);
+    g.drawRect(getRenderArea().toFloat(), 3);
 
     auto& lowCut = monoChain.get<ChainPositions::LowCut>();
     auto& peak = monoChain.get<ChainPositions::Peak>();
@@ -295,27 +295,81 @@ void ResponseCurveComponent::resized()
 
     };
 
-    g.setColour(Colours::dimgrey);
+    
+
+    
+
+    
+
+   
+
+    auto renderArea = getAnalysisArea();
+    auto left = renderArea.getX();
+    auto right = renderArea.getRight();
+    auto top = renderArea.getY();
+    auto bottom = renderArea.getBottom();
+    auto width = renderArea.getWidth();
+
+    Array<float> xs;
+
     for (auto f : freqs)
     {
         auto normX = mapFromLog10(f, 20.f, 20000.f);
-
-        g.drawVerticalLine(getWidth() * normX, 0.f, getHeight());
+        xs.add(left + width * normX);
     }
+    g.setColour(Colours::dimgrey);
 
     Array<float> gain
     {
         -24,-12,0,12,24
     };
 
+    for (auto x : xs)
+    {
+        g.drawVerticalLine(x, top, bottom);
+    }
+
     for (auto gDb : gain)
     {
-        auto y = jmap(gDb, -24.f, 24.f, float(getHeight()), 0.f);
-        g.drawHorizontalLine(y, 0, getWidth());
+        auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+      
         g.setColour(Colours::darkslategrey);
-        g.drawHorizontalLine(y, 0, getWidth());
+        g.drawHorizontalLine(y, left, right);
         
     }
+    g.setColour(Colours::lightskyblue);
+    const int fontHeight = 12;
+    g.setFont(fontHeight);
+
+    for (int i = 0; i < freqs.size(); ++i)
+    {
+        auto f = freqs[i];
+        auto x = xs[i];
+
+        bool addK = false;
+        String str;
+        if (f > 999.f)
+        {
+            addK = true;
+            f /= 1000.f;
+
+        }
+
+        str << f;
+        if (addK)
+            str << "k";
+        str << "Hz";
+
+        auto textWidth = g.getCurrentFont().getStringWidth(str);
+
+        Rectangle<int> r;
+        r.setSize(textWidth, fontHeight);
+        r.setCentre(x, 0);
+        r.setY(1);
+
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+    }
+
 
    
 }
@@ -441,6 +495,27 @@ void SimpleEQAudioProcessorEditor::resized()
 
 }
 
+juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
+{
+    auto bounds = getLocalBounds();
+
+    bounds.removeFromTop(12);
+    bounds.removeFromTop(2);
+    bounds.removeFromLeft(20);
+    bounds.removeFromRight(20);
+
+    return bounds;
+}
+
+juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
+{
+    auto bounds = getRenderArea();
+    bounds.removeFromTop(4);
+    bounds.removeFromBottom(4);
+
+    return bounds;
+
+}
 
 
 std::vector<juce::Component*> SimpleEQAudioProcessorEditor::getComps()
