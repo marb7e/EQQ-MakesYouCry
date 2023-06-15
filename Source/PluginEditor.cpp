@@ -264,8 +264,13 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
 
     // Spectrum analyzer
 
-    g.setColour(Colours::red);
+
+    leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
+
+    g.setColour(Colours::yellow);
+
     g.strokePath(leftChannelFFTPath, PathStrokeType(1.f));
+
 
     //Rectangle around response curve
     g.setColour(Colours::grey);
