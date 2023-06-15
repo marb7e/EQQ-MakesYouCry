@@ -11,118 +11,134 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-#include <array>
-template<typename T>
-struct Fifo
+enum FFTOrder
 {
-    void prepare(int numChannels, int numSamples)
-    {
-        for (auto& buffer : buffers)
-        {
-            buffer.setSize(numChannels, numSamples, false, true, true);
-            buffer.clear();
-        }
-    }
-
-    bool push(const T& t)
-    {
-        auto write = fifo.write(1);
-        if (write.blockSize1 > 0)
-        {
-            buffers[write.startIndex1] = t;
-            return true;
-        }
-        return false;
-    }
-
-    bool pull(T& t)
-    {
-        auto read = fifo.read(1);
-        if (read.blockSize1 > 0)
-        {
-            t = buffers[read.startIndex1];
-            return true;
-        }
-
-        return false;
-    }
-
-    int getNumAvailableForReading() const
-    {
-        return fifo.getNumReady();
-    }
-private:
-    static constexpr int Capacity = 30;
-    std::array<T, Capacity> buffers;
-    juce::AbstractFifo fifo{ Capacity };
-};
-
-enum Channel
-{
-    Right, //effectively 0
-    Left  ///effectively 1
+    order2048 = 11,
+    order4096 = 11,
+    order8192 = 11
 };
 
 template<typename BlockType>
-struct SingleChannelSampleFifo
+struct FFTDataGenerator
 {
-    SingleChannelSampleFifo(Channel ch) : channelToUse(ch)
+    void produceFFTDataForRendering(const juce::AudioBuffer<float>& audioData, const float negativeInfinity)
     {
-        prepared.set(false);
-    }
-    void update(const BlockType& buffer)
-    {
-        jassert(prepared.get());
-        jassert(buffer.getNumChannels() > channelToUse);
-        auto* channelPtr = buffer.getReadPointer(channelToUse);
+        const auto fftSize = getFFTSize();
 
-        for (int = 0; i < buffer.getNumSamples(); ++i)
+        fftData.assign(fftData.size(), 0);
+        auto* readIndex = audioData.getReadPointer(0);
+        std::copy(readIndex, readIndex + fftSize, fftData.begin());
+
+        window->multiplyWithWindowingTable(fftData.data(), fftSize);
+
+        forwardFFT->performFrequencyOnlyForwardTransform(fftData.data());
+
+        int numBins = (int)fftSize / 2;
+
+        for (int i = 0; i < numBins; ++i)
         {
-            pushNextSamplleIntoFifo(channelPtr[i]);
+            fftData[i] /= (float)numBins;
+
         }
+
+        for (int i = 0; i < numBins; ++i)
+        {
+            fftData[i] = juce::Decibels::gainToDecibels(fftData[i], negativeInfinity);
+        }
+
+        fftDataFifo.push(fftData);
     }
-    void prepare(int bufferSize)
+
+    void changeOrder(FFTOrder newOrder)
     {
-        prepared.set(false);
-        size.set(bufferSize);
+        order = newOrder;
+        auto fftSize = getFFTSize();
 
-        bufferToFill.setSize(1, bufferSize, false, true, true);
-        audioBufferFifo.prepare(1, bufferSize);
-        fifoIndex = 0;
-        prepared.set(true);
+        forwardFFT = std::make_unique<juce::dsp::FFT>(order);
+        window = std::make_unique<juce::dsp::WindowingFunction<float>>(fftSize, juce::dsp::WindowingFunction<float>::blackmanHarris);
+
+        fftData.clear();
+        fftData.resize(fftSize * 2, 0);
+        fftDataFifo.prepare(fftData.size());
     }
 
+    int getFFTSize() const { return 1 << order; }
+    int getNumAvailableFFTDataBlocks() const { return fftDataFifo.getNumAvailableForReading(); }
 
-    int getNumCompleteBuffersAvailable() const { return audioBufferFifo.getNumAvailableForReading(); }
-    bool isPrepared() const { return prepared.get(); }
-    int getSize() const { return size.get(); }
-
-    bool getAudioBuffer(BlockType& buf) { return audioBufferFifo.pull(buf); }
-
+    bool getFFTData(BlockType& fftData) { return fftDataFifo.pull(fftData); }
 private:
+    FFTOrder order;
+    BlockType fftData;
+    std::unique_ptr<juce::dsp::FFT> forwardFFT;
+    std::unique_ptr<juce::dsp::WindowingFunction<float>> window;
 
-    Channel channeltoUse;
-    int fifoIndex = 0;
-    Fifo<BlockType> audioBufferFifo;
-    BlockType bufferToFill;
-    juce::Atomic<bool> prepared = false;
-    juce::Atomic<int> size = 0;
-
-    void pushNextSampleIntoFifo(float sample)
-    {
-        if (fifoIndex == bufferToFill.getNumSamples())
-        {
-            auto ok = audioBufferFifo.push(bufferToFill);
-
-            juce::ignoreUnused(ok);
-
-            fifoIndex = 0;
-        }
-
-        bufferToFill.setSample(0, fifoIndex, sample);
-        ++fifoIndex;
-    }
+    Fifo<BlockType> fftDataFifo;
 };
+
+template<typename PathType>
+struct AnalyzerPathGenerator
+{
+    void generatePath(
+        const std::vector<float>& renderData,
+        juce::Rectangle<float> fftBounds,
+        int fftSize,
+        float binWidth,
+        float negativeInfinity)
+    {
+        auto top = fftBounds.getY();
+        auto bottom = fftBounds.getHeight();
+        auto width = fftBounds.getWidth();
+
+        int numBins = (int)fftSize / 2;
+
+        PathType p;
+        p.preallocateSpace(3 * (int)fftBounds.getWidth());
+
+        auto map = [bottom, top, negativeInfinity](float v)
+        {
+            return juce::jmap(
+                v,
+                negativeInfinity, 0.f,
+                float(bottom), top);
+        };
+
+        auto y = map(renderData[0]);
+
+        p.startNewSubPath(0, y);
+
+        const int pathResolution = 2;
+
+        for (int binNum = 1; binNum < numBins; binNum += pathResolution)
+        {
+            y = map(renderData[binNum]);
+
+            if (!std::isnan(y) && !std::isinf(y))
+            {
+                auto binFreq = binNum * binWidth;
+                auto normalizeBinX = juce::mapFromLog10(binFreq, 1.f, 20000.f);
+                int binX = std::floor(normalizeBinX * width);
+                p.lineTo(binX, y);
+            }
+        }
+        pathFifo.push(p);
+    }
+    int getNumPathsAvailable() const
+    {
+        return pathFifo.getNumAvailableForReading();
+    }
+
+    bool getPath(PathType& path)
+    {
+        return pathFifo.pull(path);
+    }
+private:
+    Fifo<PathType> pathFifo;
+
+};
+
+
+
+
 
 struct LookAndFeel : juce::LookAndFeel_V4
 {
@@ -204,6 +220,18 @@ private:
     juce::Rectangle<int> getRenderArea();
 
     juce::Rectangle<int> getAnalysisArea();
+
+    SingleChannelSampleFifo<SimpleEQAudioProcessor::BlockType>*leftChannelFifo;
+
+    juce::AudioBuffer<float> monoBuffer;
+
+    FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator;
+
+    AnalyzerPathGenerator<juce::Path> pathProducer;
+
+    juce::Path leftChannelFFTPath;
+
+
 };
 
 //
